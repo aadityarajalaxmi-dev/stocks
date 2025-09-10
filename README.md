@@ -140,3 +140,4 @@ This project is for educational purposes. Please respect Yahoo Finance's terms o
 
 If you encounter any issues or have questions, please check the troubleshooting section above or create an issue in the project repository.
 # stocks
+# stocks
