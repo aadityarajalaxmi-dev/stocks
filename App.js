@@ -1,22 +1,23 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, View, SafeAreaView, TouchableOpacity, Text } from 'react-native';
+import { StyleSheet, View, SafeAreaView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
-import { ThemeProvider, useTheme } from './contexts/ThemeContext';
 import StockWatchlist from './components/StockWatchlist';
 import StockSelector from './components/StockSelector';
-import FibonacciLevels from './components/FibonacciLevels';
+import StockDetailTabs from './components/StockDetailTabs';
+import NotificationService from './services/notificationService';
+import { ThemeProvider, useTheme } from './contexts/ThemeContext';
 
-const AppContent = () => {
-  const { theme, isDarkMode, toggleTheme } = useTheme();
+function AppContent() {
+  const { theme } = useTheme();
   const [showStockSelector, setShowStockSelector] = useState(false);
   const [selectedStock, setSelectedStock] = useState(null);
-  const [currentView, setCurrentView] = useState('watchlist'); // 'watchlist' or 'fibonacci'
+  const [currentView, setCurrentView] = useState('watchlist'); // 'watchlist' or 'details'
 
   const handleStockSelect = (stock) => {
     setSelectedStock(stock);
-    setCurrentView('fibonacci');
+    setCurrentView('details');
   };
 
   const handleBackToWatchlist = () => {
@@ -24,11 +25,21 @@ const AppContent = () => {
     setSelectedStock(null);
   };
 
+  // Initialize notification service
+  useEffect(() => {
+    NotificationService.start();
+
+    return () => {
+      NotificationService.stop();
+    };
+  }, []);
+
   const renderCurrentView = () => {
-    if (currentView === 'fibonacci' && selectedStock) {
+    if (currentView === 'details' && selectedStock) {
       return (
-        <FibonacciLevels 
+        <StockDetailTabs 
           symbol={selectedStock.symbol}
+          stock={selectedStock}
           onBack={handleBackToWatchlist}
         />
       );
@@ -43,7 +54,10 @@ const AppContent = () => {
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
-      <StatusBar style={isDarkMode ? "light" : "dark"} backgroundColor={theme.colors.headerBackground} />
+      <StatusBar 
+        style={theme.isDark ? "light" : "dark"} 
+        backgroundColor={theme.colors.background} 
+      />
       {renderCurrentView()}
       
       <StockSelector
@@ -52,7 +66,7 @@ const AppContent = () => {
       />
     </SafeAreaView>
   );
-};
+}
 
 export default function App() {
   return (

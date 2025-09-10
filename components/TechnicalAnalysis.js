@@ -6,7 +6,8 @@ import {
   ScrollView,
   ActivityIndicator,
   Alert,
-  TouchableOpacity
+  TouchableOpacity,
+  Animated
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../contexts/ThemeContext';
@@ -16,23 +17,52 @@ import {
   calculateSupportResistance,
   getCurrentLevel,
   formatPrice,
-  getChangeColor
+  getChangeColor,
+  calculateRSI,
+  calculateMACD
 } from '../utils/fibonacciUtils';
+import { RSIChart, MACDChart } from './TechnicalCharts';
+import StockHeader from './StockHeader';
 
-const FibonacciLevels = ({ symbol, onBack }) => {
+const TechnicalAnalysis = ({ symbol, onBack }) => {
   const { theme } = useTheme();
   const [fibonacciData, setFibonacciData] = useState(null);
   const [currentPrice, setCurrentPrice] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [rsiData, setRsiData] = useState(null);
+  const [macdData, setMacdData] = useState(null);
+  const [currentStock, setCurrentStock] = useState(null);
+  const [shimmerAnim] = useState(new Animated.Value(0));
 
   useEffect(() => {
     if (symbol) {
-      loadFibonacciData();
+      loadTechnicalData();
     }
   }, [symbol]);
 
-  const loadFibonacciData = async () => {
+  // Start shimmer animation
+  useEffect(() => {
+    const startShimmer = () => {
+      Animated.loop(
+        Animated.sequence([
+          Animated.timing(shimmerAnim, {
+            toValue: 1,
+            duration: 2000,
+            useNativeDriver: true,
+          }),
+          Animated.timing(shimmerAnim, {
+            toValue: 0,
+            duration: 2000,
+            useNativeDriver: true,
+          }),
+        ])
+      ).start();
+    };
+    startShimmer();
+  }, [shimmerAnim]);
+
+  const loadTechnicalData = async () => {
     setLoading(true);
     setError(null);
     
@@ -48,9 +78,10 @@ const FibonacciLevels = ({ symbol, onBack }) => {
       }
 
       setCurrentPrice(stock.price);
+      setCurrentStock(stock);
 
-      // Get historical data for Fibonacci calculations
-      const historicalData = await StockService.getHistoricalData(symbol, '3mo');
+      // Get historical data for Fibonacci calculations and technical indicators
+      const historicalData = await StockService.getHistoricalData(symbol, '6mo');
       
       if (historicalData.length === 0) {
         setError('No historical data available');
@@ -61,15 +92,27 @@ const FibonacciLevels = ({ symbol, onBack }) => {
       // Calculate Fibonacci levels
       const { high, low, levels } = calculateSupportResistance(historicalData);
       
+      // Calculate RSI and MACD
+      const closePrices = historicalData.map(day => day.close);
+      const rsiValues = calculateRSI(closePrices, 14);
+      const macdValues = calculateMACD(closePrices, 12, 26, 9);
+      
       setFibonacciData({
         high,
         low,
         levels,
         historicalData: historicalData.slice(-30) // Last 30 days for display
       });
+      
+      setRsiData(rsiValues.slice(-30)); // Last 30 RSI values for display
+      setMacdData({
+        macd: macdValues.macd.slice(-30),
+        signal: macdValues.signal.slice(-30),
+        histogram: macdValues.histogram.slice(-30)
+      });
     } catch (error) {
-      console.error('Error loading Fibonacci data:', error);
-      setError('Failed to load Fibonacci data');
+      console.error('Error loading technical data:', error);
+      setError('Failed to load technical data');
     } finally {
       setLoading(false);
     }
@@ -77,6 +120,9 @@ const FibonacciLevels = ({ symbol, onBack }) => {
 
   const getLevelColor = (levelName, levelValue) => {
     if (!currentPrice) return '#757575';
+    
+    // Special gold color for 61.8% level
+    if (levelName === '61.8') return '#FFD700'; // Gold
     
     const diff = Math.abs(currentPrice - levelValue);
     const range = fibonacciData ? fibonacciData.high - fibonacciData.low : 1;
@@ -94,28 +140,61 @@ const FibonacciLevels = ({ symbol, onBack }) => {
   };
 
   const renderFibonacciLevel = (levelName, levelValue) => {
-    const isCurrentLevel = currentPrice && 
-      Math.abs(currentPrice - levelValue) < (fibonacciData.high - fibonacciData.low) * 0.05;
+    const currentLevel = getCurrentLevel(currentPrice, fibonacciData?.levels || {});
+    const isCurrentLevel = currentLevel && currentLevel.level === parseFloat(levelName);
+    const shouldShowCurrentLevel = isCurrentLevel;
+    const isGoldLevel = levelName === '61.8';
     
     return (
       <View key={levelName} style={[
         [styles.levelItem, { backgroundColor: theme.colors.cardBackground }],
-        isCurrentLevel && [styles.currentLevel, { borderColor: theme.colors.primary }]
+        shouldShowCurrentLevel && [styles.currentLevel, { borderColor: theme.colors.primary }],
+        isGoldLevel && styles.goldLevel
       ]}>
+        {isGoldLevel && (
+          <Animated.View 
+            style={[
+              styles.shimmerOverlay,
+              {
+                opacity: shimmerAnim.interpolate({
+                  inputRange: [0, 0.5, 1],
+                  outputRange: [0.3, 0.8, 0.3],
+                }),
+                transform: [{
+                  translateX: shimmerAnim.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [-100, 100],
+                  })
+                }]
+              }
+            ]}
+          />
+        )}
         <View style={styles.levelHeader}>
-          <Text style={[styles.levelName, { color: theme.colors.text }]}>{levelName}%</Text>
-          <Text style={[styles.levelStrength, { color: theme.colors.textSecondary, backgroundColor: theme.colors.surfaceVariant }]}>
+          <Text style={[
+            styles.levelName, 
+            { color: theme.colors.text },
+            isGoldLevel && styles.goldText
+          ]}>
+            {levelName}%
+          </Text>
+          <Text style={[
+            styles.levelStrength, 
+            { color: theme.colors.textSecondary, backgroundColor: theme.colors.surfaceVariant },
+            isGoldLevel && styles.goldStrength
+          ]}>
             {getLevelStrength(levelName)}
           </Text>
         </View>
         <View style={styles.levelContent}>
           <Text style={[
             styles.levelPrice,
-            { color: getLevelColor(levelName, levelValue) }
+            { color: getLevelColor(levelName, levelValue) },
+            isGoldLevel && styles.goldPrice
           ]}>
             {formatPrice(levelValue)}
           </Text>
-          {isCurrentLevel && (
+          {shouldShowCurrentLevel && (
             <View style={styles.currentIndicator}>
               <Ionicons name="radio-button-on" size={16} color={theme.colors.primary} />
               <Text style={[styles.currentText, { color: theme.colors.primary }]}>Current Level</Text>
@@ -141,11 +220,11 @@ const FibonacciLevels = ({ symbol, onBack }) => {
           </Text>
         </View>
         <View style={styles.analysisItem}>
-          <Text style={[styles.analysisLabel, { color: theme.colors.textSecondary }]}>High (3 months):</Text>
+          <Text style={[styles.analysisLabel, { color: theme.colors.textSecondary }]}>High (6 months):</Text>
           <Text style={[styles.analysisValue, { color: theme.colors.text }]}>{formatPrice(fibonacciData.high)}</Text>
         </View>
         <View style={styles.analysisItem}>
-          <Text style={[styles.analysisLabel, { color: theme.colors.textSecondary }]}>Low (3 months):</Text>
+          <Text style={[styles.analysisLabel, { color: theme.colors.textSecondary }]}>Low (6 months):</Text>
           <Text style={[styles.analysisValue, { color: theme.colors.text }]}>{formatPrice(fibonacciData.low)}</Text>
         </View>
         {currentLevel && (
@@ -164,7 +243,7 @@ const FibonacciLevels = ({ symbol, onBack }) => {
     return (
       <View style={[styles.loadingContainer, { backgroundColor: theme.colors.background }]}>
         <ActivityIndicator size="large" color={theme.colors.primary} />
-        <Text style={[styles.loadingText, { color: theme.colors.textSecondary }]}>Loading Fibonacci levels...</Text>
+        <Text style={[styles.loadingText, { color: theme.colors.textSecondary }]}>Loading technical analysis...</Text>
       </View>
     );
   }
@@ -185,28 +264,19 @@ const FibonacciLevels = ({ symbol, onBack }) => {
     return (
       <View style={[styles.emptyContainer, { backgroundColor: theme.colors.background }]}>
         <Ionicons name="trending-up" size={48} color={theme.colors.textTertiary} />
-        <Text style={[styles.emptyText, { color: theme.colors.textTertiary }]}>No Fibonacci data available</Text>
+        <Text style={[styles.emptyText, { color: theme.colors.textTertiary }]}>No technical data available</Text>
       </View>
     );
   }
 
   return (
     <ScrollView style={[styles.container, { backgroundColor: theme.colors.background }]} showsVerticalScrollIndicator={false}>
-      <View style={[styles.header, { backgroundColor: theme.colors.headerBackground }]}>
-        <TouchableOpacity onPress={onBack} style={styles.backButton}>
-          <Ionicons name="arrow-back" size={24} color={theme.colors.headerText} />
-        </TouchableOpacity>
-        <View style={styles.headerContent}>
-          <Text style={[styles.title, { color: theme.colors.headerText }]}>Fibonacci Retracement</Text>
-          <Text style={[styles.subtitle, { color: theme.colors.headerText }]}>{symbol}</Text>
-        </View>
-        <View style={styles.placeholder} />
-      </View>
+      <StockHeader stock={currentStock} onBack={onBack} />
 
       {renderPriceAnalysis()}
 
       <View style={styles.levelsContainer}>
-        <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>Retracement Levels</Text>
+        <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>Fibonacci Retracement Levels</Text>
         {Object.entries(fibonacciData.levels)
           .sort(([a], [b]) => parseFloat(b) - parseFloat(a))
           .map(([levelName, levelValue]) => 
@@ -214,13 +284,28 @@ const FibonacciLevels = ({ symbol, onBack }) => {
           )}
       </View>
 
+      {/* Technical Indicators Section */}
+      <View style={styles.indicatorsContainer}>
+        <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>Technical Indicators</Text>
+        
+        {/* RSI Chart */}
+        {rsiData && rsiData.length > 0 && (
+          <RSIChart rsiData={rsiData} theme={theme} />
+        )}
+        
+        {/* MACD Chart */}
+        {macdData && macdData.macd && macdData.macd.length > 0 && (
+          <MACDChart macdData={macdData} theme={theme} />
+        )}
+      </View>
+
       <View style={[styles.infoContainer, { backgroundColor: theme.colors.cardBackground }]}>
-        <Text style={[styles.infoTitle, { color: theme.colors.text }]}>About Fibonacci Levels</Text>
+        <Text style={[styles.infoTitle, { color: theme.colors.text }]}>About Technical Analysis</Text>
         <Text style={[styles.infoText, { color: theme.colors.textSecondary }]}>
           Fibonacci retracement levels are horizontal lines that indicate where support and resistance are likely to occur. They are based on the key numbers identified by mathematician Leonardo Fibonacci.
         </Text>
         <Text style={[styles.infoText, { color: theme.colors.textSecondary }]}>
-          The most important levels are 38.2%, 50%, and 61.8%, which often act as strong support or resistance levels.
+          RSI (Relative Strength Index) measures momentum, while MACD (Moving Average Convergence Divergence) shows trend changes.
         </Text>
       </View>
     </ScrollView>
@@ -230,30 +315,6 @@ const FibonacciLevels = ({ symbol, onBack }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-  },
-  header: {
-    padding: 20,
-    paddingTop: 50,
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  backButton: {
-    padding: 4,
-    marginRight: 12,
-  },
-  headerContent: {
-    flex: 1,
-  },
-  placeholder: {
-    width: 32,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-  },
-  subtitle: {
-    fontSize: 16,
-    marginTop: 4,
   },
   loadingContainer: {
     flex: 1,
@@ -320,6 +381,9 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   levelsContainer: {
+    margin: 16,
+  },
+  indicatorsContainer: {
     margin: 16,
   },
   sectionTitle: {
@@ -394,6 +458,46 @@ const styles = StyleSheet.create({
     lineHeight: 20,
     marginBottom: 8,
   },
+  // Chrome Gold Effect Styles
+  goldLevel: {
+    backgroundColor: '#1a1a1a',
+    borderWidth: 2,
+    borderColor: '#FFD700',
+    shadowColor: '#FFD700',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.8,
+    shadowRadius: 10,
+    elevation: 8,
+  },
+  shimmerOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'transparent',
+    borderRadius: 8,
+    overflow: 'hidden',
+  },
+  goldText: {
+    color: '#FFD700',
+    fontWeight: 'bold',
+    textShadowColor: '#FFD700',
+    textShadowOffset: { width: 0, height: 0 },
+    textShadowRadius: 5,
+  },
+  goldPrice: {
+    color: '#FFD700',
+    fontWeight: 'bold',
+    textShadowColor: '#FFD700',
+    textShadowOffset: { width: 0, height: 0 },
+    textShadowRadius: 5,
+  },
+  goldStrength: {
+    color: '#FFD700',
+    backgroundColor: 'rgba(255, 215, 0, 0.2)',
+    fontWeight: 'bold',
+  },
 });
 
-export default FibonacciLevels;
+export default TechnicalAnalysis;

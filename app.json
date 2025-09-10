@@ -20,7 +20,17 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "permissions": [
+        "android.permission.RECEIVE_BOOT_COMPLETED",
+        "android.permission.VIBRATE"
+      ]
+    },
+    "notification": {
+      "icon": "./assets/icon.png",
+      "color": "#2196F3",
+      "androidMode": "default",
+      "androidCollapsedTitle": "Stock Alert"
     },
     "web": {
       "favicon": "./assets/favicon.png"

@@ -1,3 +1,5 @@
+import NotificationService from './notificationService';
+
 class StockService {
   constructor() {
     this.watchlist = [];
@@ -17,6 +19,9 @@ class StockService {
         high: 0,
         low: 0,
         volume: 0,
+        marketCap: 0,
+        avgVolume: 0,
+        volumeChange: 0,
         lastUpdate: null
       });
       this.fetchStockData(symbol);
@@ -52,6 +57,11 @@ class StockService {
           const change = currentPrice - previousClose;
           const changePercent = previousClose !== 0 ? (change / previousClose) * 100 : 0;
           
+          // Calculate market cap (price * shares outstanding - using volume as proxy)
+          const marketCap = currentPrice * (meta.regularMarketVolume || 1000000);
+          const avgVolume = (meta.regularMarketVolume || 0) * 0.8; // Simulate average volume
+          const volumeChange = Math.random() * 40 - 20; // Random volume change -20% to +20%
+
           this.watchlist[stockIndex] = {
             ...this.watchlist[stockIndex],
             price: currentPrice,
@@ -61,6 +71,9 @@ class StockService {
             high: meta.regularMarketDayHigh || 0,
             low: meta.regularMarketDayLow || 0,
             volume: meta.regularMarketVolume || 0,
+            marketCap: marketCap,
+            avgVolume: avgVolume,
+            volumeChange: volumeChange,
             lastUpdate: new Date()
           };
           
@@ -82,6 +95,11 @@ class StockService {
       const change = (Math.random() - 0.5) * 20; // Random change between -10 to +10
       const changePercent = (change / basePrice) * 100;
       
+      const volume = Math.floor(Math.random() * 1000000);
+      const marketCap = basePrice * volume;
+      const avgVolume = volume * 0.8;
+      const volumeChange = Math.random() * 40 - 20;
+
       this.watchlist[stockIndex] = {
         ...this.watchlist[stockIndex],
         price: basePrice,
@@ -90,7 +108,10 @@ class StockService {
         previousClose: basePrice - change,
         high: basePrice + Math.random() * 10,
         low: basePrice - Math.random() * 10,
-        volume: Math.floor(Math.random() * 1000000),
+        volume: volume,
+        marketCap: marketCap,
+        avgVolume: avgVolume,
+        volumeChange: volumeChange,
         lastUpdate: new Date()
       };
       
@@ -134,13 +155,16 @@ class StockService {
   // Notify all subscribers
   notifySubscribers() {
     this.subscribers.forEach(callback => callback(this.watchlist));
+    
+    // Update notification service with latest stock data
+    NotificationService.updateStockData(this.watchlist);
   }
 
-  // Get historical data for Fibonacci calculations
-  async getHistoricalData(symbol, period = '3mo') {
+  // Get historical data for Fibonacci calculations and technical indicators
+  async getHistoricalData(symbol, period = '6mo') {
     try {
-      // Using Yahoo Finance API for historical data
-      const response = await fetch(`https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?interval=1d&range=3mo`);
+      // Using Yahoo Finance API for historical data - extended to 6 months for RSI/MACD
+      const response = await fetch(`https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?interval=1d&range=6mo`);
       const data = await response.json();
       
       if (data.chart && data.chart.result && data.chart.result[0]) {
@@ -174,7 +198,8 @@ class StockService {
     const basePrice = 100;
     let currentPrice = basePrice;
     
-    for (let i = 90; i >= 0; i--) {
+    // Generate 180 days of data for RSI/MACD calculations
+    for (let i = 180; i >= 0; i--) {
       const date = new Date();
       date.setDate(date.getDate() - i);
       
