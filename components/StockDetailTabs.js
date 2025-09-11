@@ -251,7 +251,7 @@ const NewsContent = ({ symbol, theme }) => {
 };
 
 // Technical Analysis Content Component
-const TechnicalContent = ({ symbol, theme }) => {
+const TechnicalContent = ({ symbol, stock, theme }) => {
   const [fibonacciData, setFibonacciData] = useState(null);
   const [currentPrice, setCurrentPrice] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -265,6 +265,13 @@ const TechnicalContent = ({ symbol, theme }) => {
       loadTechnicalData();
     }
   }, [symbol]);
+
+  useEffect(() => {
+    // Update current price when stock prop changes (real-time updates)
+    if (stock && stock.price) {
+      setCurrentPrice(stock.price);
+    }
+  }, [stock]);
 
   useEffect(() => {
     const startShimmer = () => {
@@ -300,7 +307,7 @@ const TechnicalContent = ({ symbol, theme }) => {
         return;
       }
 
-      setCurrentPrice(stock.price);
+      setCurrentPrice(stock?.price || 0);
       const historicalData = await StockService.getHistoricalData(symbol, '6mo');
       
       if (historicalData.length === 0) {
@@ -456,7 +463,7 @@ const TechnicalContent = ({ symbol, theme }) => {
         <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>Price Chart</Text>
         <View style={[styles.chartWrapper, { backgroundColor: theme.colors.cardBackground }]}>
           <DetailedPriceChart 
-            stock={{ symbol, price: currentPrice }} 
+            stock={stock || { symbol, price: currentPrice }} 
             timeframe="1D"
           />
         </View>
@@ -486,21 +493,315 @@ const TechnicalContent = ({ symbol, theme }) => {
   );
 };
 
+// Financials Content Component
+const FinancialsContent = ({ symbol, theme }) => {
+  const [financialData, setFinancialData] = useState(null);
+  const [earningsData, setEarningsData] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    if (symbol) {
+      loadFinancialData();
+    }
+  }, [symbol]);
+
+  const loadFinancialData = async () => {
+    setLoading(true);
+    setError(null);
+    
+    try {
+      // Generate mock financial data for demo
+      const mockFinancials = generateMockFinancialData(symbol);
+      const mockEarnings = generateMockEarningsData(symbol);
+      
+      setFinancialData(mockFinancials);
+      setEarningsData(mockEarnings);
+    } catch (error) {
+      console.error('Error loading financial data:', error);
+      setError('Failed to load financial data');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const generateMockFinancialData = (symbol) => {
+    const baseRevenue = 50 + Math.random() * 200; // $50B - $250B
+    const revenueGrowth = (Math.random() - 0.3) * 30; // -30% to +20% growth
+    const netIncome = baseRevenue * (0.05 + Math.random() * 0.25); // 5-30% margin
+    const eps = 2 + Math.random() * 20; // $2-$22 EPS
+    const peRatio = 10 + Math.random() * 40; // P/E 10-50
+    
+    return {
+      revenue: baseRevenue,
+      revenueGrowth: revenueGrowth,
+      netIncome: netIncome,
+      grossMargin: 20 + Math.random() * 60, // 20-80%
+      operatingMargin: 5 + Math.random() * 30, // 5-35%
+      netMargin: (netIncome / baseRevenue) * 100,
+      eps: eps,
+      peRatio: peRatio,
+      pbRatio: 1 + Math.random() * 8, // P/B 1-9
+      debtToEquity: Math.random() * 2, // 0-200%
+      currentRatio: 0.5 + Math.random() * 3, // 0.5-3.5
+      roe: 5 + Math.random() * 25, // 5-30% ROE
+      roa: 2 + Math.random() * 15, // 2-17% ROA
+      freeCashFlow: netIncome * (0.8 + Math.random() * 0.4), // 80-120% of net income
+      lastUpdated: new Date()
+    };
+  };
+
+  const generateMockEarningsData = (symbol) => {
+    const quarters = ['Q4 2024', 'Q3 2024', 'Q2 2024', 'Q1 2024'];
+    const earningsHistory = quarters.map((quarter, index) => {
+      const baseEps = 2 + Math.random() * 5;
+      const estimate = baseEps + (Math.random() - 0.5) * 0.5;
+      const actual = baseEps + (Math.random() - 0.3) * 0.3;
+      const surprise = actual - estimate;
+      
+      return {
+        quarter,
+        date: new Date(2024, 9 - index * 3, 15 + Math.random() * 15),
+        epsEstimate: estimate,
+        epsActual: actual,
+        epsSurprise: surprise,
+        revenueEstimate: 20 + Math.random() * 10,
+        revenueActual: 20 + Math.random() * 12,
+        guidance: index === 0 ? 'Raised' : Math.random() > 0.5 ? 'Maintained' : 'Lowered'
+      };
+    });
+
+    // Next earnings date
+    const nextEarnings = {
+      date: new Date(Date.now() + (Math.random() * 90 + 10) * 24 * 60 * 60 * 1000),
+      epsEstimate: 2.5 + Math.random() * 3,
+      revenueEstimate: 25 + Math.random() * 10,
+      confirmed: Math.random() > 0.3
+    };
+
+    return {
+      history: earningsHistory,
+      nextEarnings: nextEarnings,
+      analystRatings: {
+        buy: Math.floor(8 + Math.random() * 15),
+        hold: Math.floor(5 + Math.random() * 10),
+        sell: Math.floor(0 + Math.random() * 5)
+      }
+    };
+  };
+
+  const formatCurrency = (amount, unit = 'B') => {
+    return `$${amount.toFixed(1)}${unit}`;
+  };
+
+  const formatPercentage = (value) => {
+    return `${value >= 0 ? '+' : ''}${value.toFixed(1)}%`;
+  };
+
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <Text style={[styles.loadingText, { color: theme.colors.textSecondary }]}>
+          Loading financial data...
+        </Text>
+      </View>
+    );
+  }
+
+  if (error) {
+    return (
+      <View style={styles.errorContainer}>
+        <Ionicons name="alert-circle" size={48} color={theme.colors.error} />
+        <Text style={[styles.errorText, { color: theme.colors.error }]}>{error}</Text>
+      </View>
+    );
+  }
+
+  if (!financialData || !earningsData) {
+    return (
+      <View style={styles.emptyState}>
+        <Ionicons name="analytics" size={48} color={theme.colors.textTertiary} />
+        <Text style={[styles.emptyText, { color: theme.colors.textTertiary }]}>No financial data available</Text>
+      </View>
+    );
+  }
+
+  return (
+    <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+      {/* Key Metrics */}
+      <View style={styles.section}>
+        <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>Key Financial Metrics</Text>
+        <View style={styles.metricsGrid}>
+          <View style={[styles.metricCard, { backgroundColor: theme.colors.cardBackground }]}>
+            <Text style={[styles.metricLabel, { color: theme.colors.textSecondary }]}>Revenue (TTM)</Text>
+            <Text style={[styles.metricValue, { color: theme.colors.text }]}>{formatCurrency(financialData.revenue)}</Text>
+            <Text style={[styles.metricChange, { color: financialData.revenueGrowth >= 0 ? theme.colors.positive : theme.colors.negative }]}>
+              {formatPercentage(financialData.revenueGrowth)} YoY
+            </Text>
+          </View>
+          
+          <View style={[styles.metricCard, { backgroundColor: theme.colors.cardBackground }]}>
+            <Text style={[styles.metricLabel, { color: theme.colors.textSecondary }]}>Net Income</Text>
+            <Text style={[styles.metricValue, { color: theme.colors.text }]}>{formatCurrency(financialData.netIncome)}</Text>
+            <Text style={[styles.metricChange, { color: theme.colors.textSecondary }]}>
+              {financialData.netMargin.toFixed(1)}% Margin
+            </Text>
+          </View>
+          
+          <View style={[styles.metricCard, { backgroundColor: theme.colors.cardBackground }]}>
+            <Text style={[styles.metricLabel, { color: theme.colors.textSecondary }]}>EPS (TTM)</Text>
+            <Text style={[styles.metricValue, { color: theme.colors.text }]}>${financialData.eps.toFixed(2)}</Text>
+            <Text style={[styles.metricChange, { color: theme.colors.textSecondary }]}>
+              P/E: {financialData.peRatio.toFixed(1)}
+            </Text>
+          </View>
+          
+          <View style={[styles.metricCard, { backgroundColor: theme.colors.cardBackground }]}>
+            <Text style={[styles.metricLabel, { color: theme.colors.textSecondary }]}>Free Cash Flow</Text>
+            <Text style={[styles.metricValue, { color: theme.colors.text }]}>{formatCurrency(financialData.freeCashFlow)}</Text>
+            <Text style={[styles.metricChange, { color: theme.colors.positive }]}>
+              ROE: {financialData.roe.toFixed(1)}%
+            </Text>
+          </View>
+        </View>
+      </View>
+
+      {/* Next Earnings */}
+      <View style={styles.section}>
+        <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>Next Earnings</Text>
+        <View style={[styles.earningsCard, { backgroundColor: theme.colors.cardBackground }]}>
+          <View style={styles.earningsHeader}>
+            <Text style={[styles.earningsDate, { color: theme.colors.text }]}>
+              {earningsData.nextEarnings.date.toLocaleDateString()}
+            </Text>
+            <View style={[styles.statusBadge, { backgroundColor: earningsData.nextEarnings.confirmed ? theme.colors.positive : theme.colors.warning }]}>
+              <Text style={[styles.statusText, { color: theme.colors.background }]}>
+                {earningsData.nextEarnings.confirmed ? 'Confirmed' : 'Estimated'}
+              </Text>
+            </View>
+          </View>
+          <View style={styles.earningsDetails}>
+            <View style={styles.earningsRow}>
+              <Text style={[styles.earningsLabel, { color: theme.colors.textSecondary }]}>EPS Estimate:</Text>
+              <Text style={[styles.earningsValue, { color: theme.colors.text }]}>
+                ${earningsData.nextEarnings.epsEstimate.toFixed(2)}
+              </Text>
+            </View>
+            <View style={styles.earningsRow}>
+              <Text style={[styles.earningsLabel, { color: theme.colors.textSecondary }]}>Revenue Estimate:</Text>
+              <Text style={[styles.earningsValue, { color: theme.colors.text }]}>
+                {formatCurrency(earningsData.nextEarnings.revenueEstimate)}
+              </Text>
+            </View>
+          </View>
+        </View>
+      </View>
+
+      {/* Earnings History */}
+      <View style={styles.section}>
+        <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>Recent Earnings</Text>
+        {earningsData.history.map((earnings, index) => (
+          <View key={index} style={[styles.earningsHistoryCard, { backgroundColor: theme.colors.cardBackground }]}>
+            <View style={styles.earningsHistoryHeader}>
+              <Text style={[styles.quarterText, { color: theme.colors.text }]}>{earnings.quarter}</Text>
+              <Text style={[styles.dateText, { color: theme.colors.textSecondary }]}>
+                {earnings.date.toLocaleDateString()}
+              </Text>
+            </View>
+            <View style={styles.earningsHistoryContent}>
+              <View style={styles.earningsRow}>
+                <Text style={[styles.earningsLabel, { color: theme.colors.textSecondary }]}>EPS:</Text>
+                <View style={styles.earningsComparison}>
+                  <Text style={[styles.earningsValue, { color: theme.colors.text }]}>
+                    ${earnings.epsActual.toFixed(2)}
+                  </Text>
+                  <Text style={[styles.earningsEstimate, { color: theme.colors.textTertiary }]}>
+                    vs ${earnings.epsEstimate.toFixed(2)}
+                  </Text>
+                  <Text style={[styles.earningsSurprise, { 
+                    color: earnings.epsSurprise >= 0 ? theme.colors.positive : theme.colors.negative 
+                  }]}>
+                    ({earnings.epsSurprise >= 0 ? '+' : ''}{earnings.epsSurprise.toFixed(2)})
+                  </Text>
+                </View>
+              </View>
+              <View style={styles.earningsRow}>
+                <Text style={[styles.earningsLabel, { color: theme.colors.textSecondary }]}>Guidance:</Text>
+                <Text style={[styles.guidanceText, { 
+                  color: earnings.guidance === 'Raised' ? theme.colors.positive : 
+                        earnings.guidance === 'Lowered' ? theme.colors.negative : theme.colors.textSecondary 
+                }]}>
+                  {earnings.guidance}
+                </Text>
+              </View>
+            </View>
+          </View>
+        ))}
+      </View>
+
+      {/* Analyst Ratings */}
+      <View style={styles.section}>
+        <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>Analyst Ratings</Text>
+        <View style={[styles.ratingsCard, { backgroundColor: theme.colors.cardBackground }]}>
+          <View style={styles.ratingsRow}>
+            <View style={styles.ratingItem}>
+              <Text style={[styles.ratingCount, { color: theme.colors.positive }]}>
+                {earningsData.analystRatings.buy}
+              </Text>
+              <Text style={[styles.ratingLabel, { color: theme.colors.textSecondary }]}>Buy</Text>
+            </View>
+            <View style={styles.ratingItem}>
+              <Text style={[styles.ratingCount, { color: theme.colors.warning }]}>
+                {earningsData.analystRatings.hold}
+              </Text>
+              <Text style={[styles.ratingLabel, { color: theme.colors.textSecondary }]}>Hold</Text>
+            </View>
+            <View style={styles.ratingItem}>
+              <Text style={[styles.ratingCount, { color: theme.colors.negative }]}>
+                {earningsData.analystRatings.sell}
+              </Text>
+              <Text style={[styles.ratingLabel, { color: theme.colors.textSecondary }]}>Sell</Text>
+            </View>
+          </View>
+        </View>
+      </View>
+    </ScrollView>
+  );
+};
+
 const StockDetailTabs = ({ symbol, stock, onBack }) => {
   const { theme } = useTheme();
-  const [activeTab, setActiveTab] = useState('news'); // 'news' or 'technical'
+  const [activeTab, setActiveTab] = useState('news'); // 'news', 'technical', or 'financials'
+  const [currentStock, setCurrentStock] = useState(stock);
 
   const tabs = [
     { id: 'news', label: 'News', icon: 'newspaper-outline' },
-    { id: 'technical', label: 'Analysis', icon: 'trending-up-outline' }
+    { id: 'technical', label: 'Analysis', icon: 'trending-up-outline' },
+    { id: 'financials', label: 'Financials', icon: 'analytics-outline' }
   ];
+
+  useEffect(() => {
+    // Subscribe to stock updates for real-time price changes
+    const unsubscribe = StockService.subscribe((updatedWatchlist) => {
+      const updatedStock = updatedWatchlist.find(s => s.symbol === symbol);
+      if (updatedStock) {
+        setCurrentStock(updatedStock);
+      }
+    });
+
+    return () => {
+      unsubscribe();
+    };
+  }, [symbol]);
 
   const renderTabContent = () => {
     switch (activeTab) {
       case 'news':
         return <NewsContent symbol={symbol} theme={theme} />;
       case 'technical':
-        return <TechnicalContent symbol={symbol} theme={theme} />;
+        return <TechnicalContent symbol={symbol} stock={currentStock} theme={theme} />;
+      case 'financials':
+        return <FinancialsContent symbol={symbol} theme={theme} />;
       default:
         return <NewsContent symbol={symbol} theme={theme} />;
     }
@@ -508,7 +809,7 @@ const StockDetailTabs = ({ symbol, stock, onBack }) => {
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
-      <StockHeader stock={stock} onBack={onBack} />
+      <StockHeader stock={currentStock} onBack={onBack} />
       
       {/* Tab Bar */}
       <View style={[styles.tabBar, { backgroundColor: theme.colors.surface, borderBottomColor: theme.colors.border }]}>
@@ -803,6 +1104,151 @@ const styles = StyleSheet.create({
     color: '#FFD700',
     backgroundColor: 'rgba(255, 215, 0, 0.2)',
     fontWeight: 'bold',
+  },
+  // Financials styles
+  section: {
+    margin: 16,
+  },
+  metricsGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+  },
+  metricCard: {
+    width: '48%',
+    marginBottom: 12,
+    padding: 16,
+    borderRadius: 12,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  metricLabel: {
+    fontSize: 12,
+    fontWeight: '500',
+    marginBottom: 4,
+  },
+  metricValue: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 4,
+  },
+  metricChange: {
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  earningsCard: {
+    padding: 16,
+    borderRadius: 12,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  earningsHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  earningsDate: {
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  statusBadge: {
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 12,
+  },
+  statusText: {
+    fontSize: 12,
+    fontWeight: 'bold',
+  },
+  earningsDetails: {
+    gap: 8,
+  },
+  earningsRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  earningsLabel: {
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  earningsValue: {
+    fontSize: 14,
+    fontWeight: 'bold',
+  },
+  earningsHistoryCard: {
+    marginBottom: 12,
+    padding: 16,
+    borderRadius: 12,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  earningsHistoryHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  quarterText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  dateText: {
+    fontSize: 12,
+  },
+  earningsHistoryContent: {
+    gap: 8,
+  },
+  earningsComparison: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  earningsEstimate: {
+    fontSize: 12,
+  },
+  earningsSurprise: {
+    fontSize: 12,
+    fontWeight: 'bold',
+  },
+  guidanceText: {
+    fontSize: 14,
+    fontWeight: 'bold',
+  },
+  ratingsCard: {
+    padding: 16,
+    borderRadius: 12,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  ratingsRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+  },
+  ratingItem: {
+    alignItems: 'center',
+  },
+  ratingCount: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 4,
+  },
+  ratingLabel: {
+    fontSize: 12,
+    fontWeight: '500',
   },
 });
 

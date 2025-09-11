@@ -145,12 +145,14 @@ const StockHeader = ({ stock, onBack }) => {
               size={16} 
               color={getChangeColor(stock.change)} 
             />
-            <Text style={[styles.changeAmount, { color: getChangeColor(stock.change) }]}>
-              {formatPrice(stock.change)}
-            </Text>
-            <Text style={[styles.changePercent, { color: getChangeColor(stock.change) }]}>
-              ({formatPercentage(stock.changePercent)})
-            </Text>
+            <View style={styles.changeTextContainer}>
+              <Text style={[styles.changePercent, { color: getChangeColor(stock.change) }]}>
+                {formatPercentage(stock.changePercent)}
+              </Text>
+              <Text style={[styles.changeAmountSmall, { color: getChangeColor(stock.change) }]}>
+                {' '}{formatPrice(stock.change)}
+              </Text>
+            </View>
           </View>
         </View>
         
@@ -187,9 +189,9 @@ const StockHeader = ({ stock, onBack }) => {
             </Text>
           </View>
           <View style={styles.metricItem}>
-            <Text style={[styles.metricLabel, { color: theme.colors.textSecondary }]}>Vol Change</Text>
-            <Text style={[styles.metricValue, { color: getChangeColor(stock.volumeChange) }]}>
-              {formatPercentage(stock.volumeChange)}
+            <Text style={[styles.metricLabel, { color: theme.colors.textSecondary }]}>Day Open</Text>
+            <Text style={[styles.metricValue, { color: theme.colors.text }]}>
+              {formatPrice(stock.openPrice || stock.previousClose)}
             </Text>
           </View>
         </View>
@@ -278,15 +280,23 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
+  changeTextContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginLeft: 4,
+  },
   changeAmount: {
     fontSize: 16,
     fontWeight: 'bold',
     marginLeft: 4,
   },
+  changeAmountSmall: {
+    fontSize: 12,
+    marginLeft: 4,
+  },
   changePercent: {
     fontSize: 16,
     fontWeight: 'bold',
-    marginLeft: 4,
   },
   statsRow: {
     flexDirection: 'row',

@@ -75,7 +75,7 @@ export function calculateSupportResistance(historicalData) {
 // Format price for display
 export function formatPrice(price) {
   if (price === null || price === undefined) return 'N/A';
-  return `$${price.toFixed(1)}`;
+  return `$${price.toFixed(2)}`;
 }
 
 // Format percentage for display

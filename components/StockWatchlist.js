@@ -25,7 +25,7 @@ const StockWatchlist = ({ onStockSelect }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearching, setIsSearching] = useState(false);
   const [timeFilter, setTimeFilter] = useState('24h');
-  const [sortFilter, setSortFilter] = useState('volatility');
+  const [sortFilter, setSortFilter] = useState('volume');
   const [showTimeFilter, setShowTimeFilter] = useState(false);
   const [showSortFilter, setShowSortFilter] = useState(false);
   const [totalVolume, setTotalVolume] = useState(0);
@@ -39,7 +39,7 @@ const StockWatchlist = ({ onStockSelect }) => {
     });
 
     // Start live updates
-    StockService.startLiveUpdates(10000); // Update every 10 seconds
+    StockService.startLiveUpdates(1000); // Update every 1 second
 
     // Load most volatile stocks
     loadMostVolatileStocks();
@@ -173,15 +173,19 @@ const StockWatchlist = ({ onStockSelect }) => {
       <View style={styles.stockHeader}>
         <View style={styles.stockInfo}>
           <Text style={[styles.symbol, { color: theme.colors.text }]}>{item.symbol}</Text>
-          <Text style={[styles.price, { color: theme.colors.text }]}>{formatPrice(item.price)}</Text>
         </View>
         <View style={styles.changeInfo}>
-          <Text style={[styles.change, { color: getChangeColor(item.change) }]}>
-            {formatPrice(item.change)}
+          <Text style={[styles.price, { color: theme.colors.text }]}>
+            {formatPrice(item.price)}
           </Text>
-          <Text style={[styles.changePercent, { color: getChangeColor(item.change) }]}>
-            {formatPercentage(item.changePercent)}
-          </Text>
+          <View style={styles.changePercentContainer}>
+            <Text style={[styles.changePercent, { color: getChangeColor(item.change) }]}>
+              {formatPercentage(item.changePercent)}
+            </Text>
+            <Text style={[styles.changeSmall, { color: getChangeColor(item.change) }]}>
+              {' '}{formatPrice(item.change)}
+            </Text>
+          </View>
         </View>
       </View>
       
@@ -214,7 +218,7 @@ const StockWatchlist = ({ onStockSelect }) => {
     <View style={styles.emptyState}>
       <Ionicons name="trending-up" size={64} color={theme.colors.textTertiary} />
       <Text style={[styles.emptyText, { color: theme.colors.textTertiary }]}>Loading stocks...</Text>
-      <Text style={[styles.emptySubtext, { color: theme.colors.textTertiary }]}>Fetching stocks with highest change</Text>
+      <Text style={[styles.emptySubtext, { color: theme.colors.textTertiary }]}>Fetching stocks with highest volume</Text>
     </View>
   );
 
@@ -563,12 +567,18 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   price: {
-    fontSize: 16,
-    marginTop: 2,
+    fontSize: 18,
+    fontWeight: 'bold',
   },
   changeInfo: {
     alignItems: 'flex-end',
     marginRight: 8,
+  },
+  changePercentContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    marginTop: 4,
   },
   change: {
     fontSize: 16,
@@ -576,7 +586,11 @@ const styles = StyleSheet.create({
   },
   changePercent: {
     fontSize: 14,
-    marginTop: 2,
+    fontWeight: 'bold',
+  },
+  changeSmall: {
+    fontSize: 12,
+    marginLeft: 4,
   },
   stockDetails: {
     marginTop: 12,

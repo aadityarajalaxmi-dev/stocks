@@ -209,7 +209,7 @@ class NotificationService {
     const body = `${notification.symbol} is the highest performing stock!\n` +
                  `Change: ${changeText}${notification.changePercent.toFixed(1)}%\n` +
                  `Timeframe: ${timeframeText}\n` +
-                 `Current Price: $${notification.currentPrice.toFixed(1)}`;
+                 `Current Price: $${notification.currentPrice.toFixed(2)}`;
 
     try {
       await Notifications.scheduleNotificationAsync({
