@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <style>
+      .trackr-text {
+        font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        font-weight: 300;
+        font-size: 120px;
+        fill: #ffffff;
+        text-anchor: middle;
+        dominant-baseline: central;
+      }
+    </style>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="512" height="512" fill="#1a1a1a" rx="80"/>
+  
+  <!-- trackr text -->
+  <text x="256" y="256" class="trackr-text">trackr</text>
+</svg>

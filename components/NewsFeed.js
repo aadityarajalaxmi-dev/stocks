@@ -14,6 +14,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../contexts/ThemeContext';
 import NewsService from '../services/newsService';
 import StockHeader from './StockHeader';
+import AdBanner from './AdBanner';
 
 const NewsFeed = ({ symbol, onBack }) => {
   const { theme } = useTheme();
@@ -226,7 +227,26 @@ const NewsFeed = ({ symbol, onBack }) => {
           renderEmptyState()
         ) : (
           <View style={styles.newsList}>
-            {news.map(renderNewsItem)}
+            {news.map((item, index) => (
+              <View key={item.id || index}>
+                {renderNewsItem(item)}
+                {/* Show ad after every 3rd news article */}
+                {(index + 1) % 3 === 0 && (
+                  <AdBanner 
+                    style={styles.adBannerSpacing}
+                    size="banner"
+                  />
+                )}
+              </View>
+            ))}
+            
+            {/* Final ad at the bottom if we have news */}
+            {news.length > 0 && (
+              <AdBanner 
+                style={styles.finalAdBanner}
+                size="mediumRectangle"
+              />
+            )}
           </View>
         )}
       </ScrollView>
@@ -363,6 +383,14 @@ const styles = StyleSheet.create({
     fontSize: 14,
     marginTop: 8,
     textAlign: 'center',
+  },
+  adBannerSpacing: {
+    marginTop: 16,
+    marginBottom: 8,
+  },
+  finalAdBanner: {
+    marginTop: 20,
+    marginBottom: 16,
   },
 });
 

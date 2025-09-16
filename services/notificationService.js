@@ -224,6 +224,7 @@ class NotificationService {
     } catch (error) {
       console.error('Error showing notification:', error);
     }
+  
   }
 
   // Format timeframe for display

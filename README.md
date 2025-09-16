@@ -1,4 +1,4 @@
-# Stock Watchlist & Fibonacci Retracement App
+# Stock Watchlist & Analysis app
 
 A React Native app built with Expo that provides live stock price tracking and Fibonacci retracement analysis.
 
@@ -11,8 +11,7 @@ A React Native app built with Expo that provides live stock price tracking and F
 - Remove stocks from watchlist
 - Pull-to-refresh functionality
 
-### 🔢 Fibonacci Retracement Analysis
-- Calculate Fibonacci retracement levels based on 3-month historical data
+### 🔢 Stock Analysis
 - Visual indicators for current price level relative to Fibonacci levels
 - Support and resistance level identification
 - Color-coded proximity indicators

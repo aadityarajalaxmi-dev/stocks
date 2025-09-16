@@ -50,8 +50,8 @@ class StockService {
   // Fetch stock data for a specific symbol using Alpha Vantage API
   async fetchStockData(symbol) {
     try {
-      // Using a free API that works in React Native
-      const response = await fetch(`https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?interval=1d&range=1d`);
+      // Using a free API that works in React Native with pre/post market data
+      const response = await fetch(`https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?interval=1d&range=1d&includePrePost=true`);
       const data = await response.json();
       
       if (data.chart && data.chart.result && data.chart.result[0]) {
@@ -358,7 +358,8 @@ class StockService {
   async getHistoricalData(symbol, period = '6mo') {
     try {
       // Using Yahoo Finance API for historical data - extended to 6 months for RSI/MACD
-      const response = await fetch(`https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?interval=1d&range=6mo`);
+      // includePrePost=true adds pre-market and after-hours trading data
+      const response = await fetch(`https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?interval=1d&range=6mo&includePrePost=true`);
       const data = await response.json();
       
       if (data.chart && data.chart.result && data.chart.result[0]) {
@@ -372,10 +373,12 @@ class StockService {
             high: quotes.high[index] || 0,
             low: quotes.low[index] || 0,
             close: quotes.close[index] || 0,
-            open: quotes.open[index] || 0
-          })).filter(day => day.high > 0 && day.low > 0);
+            open: quotes.open[index] || 0,
+            volume: quotes.volume ? quotes.volume[index] || 0 : 0
+          })).filter(day => day.high > 0 && day.low > 0 && day.open > 0 && day.close > 0)
+            .map(candle => this.validateAndLimitCandleData(candle));
           
-          return prices;
+          return this.applyChartLimits(prices);
         }
       }
       return [];
@@ -384,6 +387,115 @@ class StockService {
       // Return mock historical data for demo
       return this.generateMockHistoricalData();
     }
+  }
+
+  // Get intraday candlestick data with specific intervals
+  async getIntradayData(symbol, interval = '5m', range = '1d') {
+    try {
+      // Yahoo Finance API supports intervals: 1m, 2m, 5m, 15m, 30m, 60m, 90m, 1h, 1d, 5d, 1wk, 1mo, 3mo
+      // includePrePost=true enables pre-market (4:00-9:30 AM) and after-hours (4:00-8:00 PM) trading data
+      const response = await fetch(`https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?interval=${interval}&range=${range}&includePrePost=true`);
+      const data = await response.json();
+      
+      if (data.chart && data.chart.result && data.chart.result[0]) {
+        const result = data.chart.result[0];
+        const timestamps = result.timestamp;
+        const quotes = result.indicators.quote[0];
+        
+        if (timestamps && quotes && timestamps.length > 0) {
+          const candles = timestamps.map((timestamp, index) => ({
+            date: new Date(timestamp * 1000),
+            open: quotes.open[index] || 0,
+            high: quotes.high[index] || 0,
+            low: quotes.low[index] || 0,
+            close: quotes.close[index] || 0,
+            volume: quotes.volume ? quotes.volume[index] || 0 : 0
+          })).filter(candle => 
+            candle.open > 0 && candle.high > 0 && candle.low > 0 && candle.close > 0 &&
+            candle.high >= Math.max(candle.open, candle.close) &&
+            candle.low <= Math.min(candle.open, candle.close)
+          ).map(candle => this.validateAndLimitCandleData(candle));
+          
+          return this.applyChartLimits(candles);
+        }
+      }
+      return [];
+    } catch (error) {
+      console.error(`Error fetching intraday data for ${symbol}:`, error);
+      return [];
+    }
+  }
+
+  // Validate and limit individual candle data
+  validateAndLimitCandleData(candle) {
+    const MAX_PRICE = 100000; // $100k max price
+    const MIN_PRICE = 0.001; // $0.001 min price
+    const MAX_VOLUME = 1000000000; // 1B max volume
+    const MAX_PRICE_CHANGE_PERCENT = 50; // 50% max change per candle
+    
+    // Validate basic OHLC relationships
+    let { open, high, low, close, volume } = candle;
+    
+    // Clamp prices to reasonable ranges
+    open = Math.max(MIN_PRICE, Math.min(MAX_PRICE, open));
+    high = Math.max(MIN_PRICE, Math.min(MAX_PRICE, high));
+    low = Math.max(MIN_PRICE, Math.min(MAX_PRICE, low));
+    close = Math.max(MIN_PRICE, Math.min(MAX_PRICE, close));
+    
+    // Ensure OHLC relationships are maintained
+    high = Math.max(high, open, close);
+    low = Math.min(low, open, close);
+    
+    // Limit extreme price movements within a single candle
+    const avgPrice = (open + close) / 2;
+    const maxChange = avgPrice * (MAX_PRICE_CHANGE_PERCENT / 100);
+    
+    if (Math.abs(close - open) > maxChange) {
+      close = open + Math.sign(close - open) * maxChange;
+      high = Math.max(high, open, close);
+      low = Math.min(low, open, close);
+    }
+    
+    // Limit volume
+    volume = Math.max(0, Math.min(MAX_VOLUME, volume));
+    
+    return {
+      ...candle,
+      open: Number(open.toFixed(4)),
+      high: Number(high.toFixed(4)),
+      low: Number(low.toFixed(4)),
+      close: Number(close.toFixed(4)),
+      volume: Math.floor(volume)
+    };
+  }
+
+  // Apply overall chart limits and smoothing
+  applyChartLimits(candles) {
+    if (!candles || candles.length === 0) return [];
+    
+    const MAX_CANDLES = 500; // Limit number of candles for performance
+    const MAX_PRICE_RANGE_PERCENT = 500; // 500% max range in a chart
+    
+    // Limit number of candles
+    let limitedCandles = candles.slice(-MAX_CANDLES);
+    
+    // Calculate price range and detect outliers
+    const allPrices = limitedCandles.flatMap(c => [c.open, c.high, c.low, c.close]);
+    const minPrice = Math.min(...allPrices);
+    const maxPrice = Math.max(...allPrices);
+    const priceRange = maxPrice - minPrice;
+    const avgPrice = allPrices.reduce((sum, price) => sum + price, 0) / allPrices.length;
+    
+    // If price range is too extreme, filter outliers
+    if (priceRange > avgPrice * (MAX_PRICE_RANGE_PERCENT / 100)) {
+      const priceThreshold = avgPrice * 2; // 200% of average as threshold
+      limitedCandles = limitedCandles.filter(candle => {
+        const candleAvg = (candle.open + candle.high + candle.low + candle.close) / 4;
+        return candleAvg <= priceThreshold;
+      });
+    }
+    
+    return limitedCandles;
   }
 
   // Generate mock historical data for demo
@@ -398,17 +510,22 @@ class StockService {
       date.setDate(date.getDate() - i);
       
       const change = (Math.random() - 0.5) * 10;
-      currentPrice += change;
+      const prevPrice = currentPrice;
+      currentPrice = Math.max(0.01, currentPrice + change);
       
-      const high = currentPrice + Math.random() * 5;
-      const low = currentPrice - Math.random() * 5;
+      const open = prevPrice;
+      const close = currentPrice;
+      const high = Math.max(open, close) + Math.random() * 5;
+      const low = Math.min(open, close) - Math.random() * 5;
+      const volume = Math.floor(Math.random() * 10000000) + 1000000;
       
       data.push({
         date: date,
-        high: high,
-        low: low,
-        close: currentPrice,
-        open: currentPrice - change
+        open: Number(open.toFixed(2)),
+        high: Number(high.toFixed(2)),
+        low: Number(Math.max(0.01, low).toFixed(2)),
+        close: Number(close.toFixed(2)),
+        volume: volume
       });
     }
     

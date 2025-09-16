@@ -1,8 +1,9 @@
 {
   "expo": {
-    "name": "trade-bot-2",
-    "slug": "trade-bot-2",
+    "name": "trackr",
+    "slug": "trackr",
     "version": "1.0.0",
+    "sdkVersion": "54.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -10,38 +11,59 @@
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#1a1a1a"
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.aadi.tyar.tradebot2",
+      "bundleIdentifier": "com.aadi.tyar.trackr",
+      "buildNumber": "1",
       "infoPlist": {
-        "ITSAppUsesNonExemptEncryption": false
+        "ITSAppUsesNonExemptEncryption": false,
+        "NSUserTrackingUsageDescription": "This identifier will be used to deliver personalized ads to you.",
+        "SKAdNetworkItems": [
+          {
+            "SKAdNetworkIdentifier": "cstr6suwn9.skadnetwork"
+          }
+        ]
       }
     },
     "android": {
+      "package": "com.aadi.tyar.trackr",
+      "versionCode": 1,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#1a1a1a"
       },
       "edgeToEdgeEnabled": true,
       "permissions": [
         "android.permission.RECEIVE_BOOT_COMPLETED",
-        "android.permission.VIBRATE"
+        "android.permission.VIBRATE",
+        "android.permission.INTERNET",
+        "android.permission.ACCESS_NETWORK_STATE"
       ]
     },
     "notification": {
       "icon": "./assets/icon.png",
       "color": "#2196F3",
       "androidMode": "default",
-      "androidCollapsedTitle": "Stock Alert"
+      "androidCollapsedTitle": "trackr Alert"
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
+    "plugins": [
+      "expo-font",
+      [
+        "expo-ads-admob",
+        {
+          "androidAppId": "ca-app-pub-3940256099942544~3347511713",
+          "iosAppId": "ca-app-pub-3940256099942544~1458002511"
+        }
+      ]
+    ],
     "extra": {
       "eas": {
-        "projectId": "f2335389-8eca-42d2-baac-83e75829e81b"
+        "projectId": "32fa5e93-a244-4cde-be66-9a2a40e5939e"
       }
     }
   }

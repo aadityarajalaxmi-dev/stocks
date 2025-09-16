@@ -29,6 +29,7 @@ import { RSIChart, MACDChart } from './TechnicalCharts';
 import PriceChart from './PriceChart';
 import DetailedPriceChart from './DetailedPriceChart';
 import StockHeader from './StockHeader';
+import AdBanner from './AdBanner';
 
 // News Content Component
 const NewsContent = ({ symbol, theme }) => {
@@ -243,7 +244,26 @@ const NewsContent = ({ symbol, theme }) => {
             </Text>
           </View>
         ) : (
-          news.map(renderNewsItem)
+          news.map((item, index) => (
+            <View key={item.id || index}>
+              {renderNewsItem(item)}
+              {/* Show ad after every 3rd news article */}
+              {(index + 1) % 3 === 0 && (
+                <AdBanner 
+                  style={styles.adBannerSpacing}
+                  size="banner"
+                />
+              )}
+            </View>
+          ))
+        )}
+        
+        {/* Final ad at the bottom if we have news */}
+        {news.length > 0 && (
+          <AdBanner 
+            style={styles.finalAdBanner}
+            size="mediumRectangle"
+          />
         )}
       </View>
     </ScrollView>
@@ -1249,6 +1269,14 @@ const styles = StyleSheet.create({
   ratingLabel: {
     fontSize: 12,
     fontWeight: '500',
+  },
+  adBannerSpacing: {
+    marginTop: 16,
+    marginBottom: 8,
+  },
+  finalAdBanner: {
+    marginTop: 20,
+    marginBottom: 16,
   },
 });
 
