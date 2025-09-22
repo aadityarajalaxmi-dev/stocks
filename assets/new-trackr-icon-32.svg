@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+  <!-- Clean dark background matching screenshot -->
+  <rect width="32" height="32" fill="#1a1a1a" rx="4.8" ry="4.8"/>
+  
+  <!-- Simple trackr text - clean and minimal like screenshot -->
+  <text x="16.0" y="17.5344" 
+        font-family="SF Pro Display, -apple-system, Helvetica Neue, Arial, sans-serif" 
+        font-size="4.384" 
+        font-weight="400" 
+        letter-spacing="-0.030688000000000003px"
+        fill="#ffffff" 
+        text-anchor="middle" 
+        dominant-baseline="middle">trackr</text>
+</svg>

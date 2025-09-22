@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Gradient background for modern iOS look -->
+    <linearGradient id="backgroundGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1a1a1a"/>
+      <stop offset="100%" stop-color="#2a2a2a"/>
+    </linearGradient>
+    
+    <!-- Text gradient -->
+    <linearGradient id="textGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#f0f0f0"/>
+    </linearGradient>
+    
+    <!-- Subtle inner shadow -->
+    <filter id="innerShadow">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="2"/>
+      <feOffset dx="1" dy="1" result="offset"/>
+    </filter>
+  </defs>
+  
+  <!-- Background with border radius -->
+  <rect width="512" height="512" fill="url(#backgroundGradient)" rx="76.8" ry="76.8"/>
+  
+  <!-- Subtle inner border for depth -->
+  <rect x="2" y="2" width="508" height="508" fill="none" 
+        stroke="rgba(255,255,255,0.1)" stroke-width="1" rx="74.8" ry="74.8"/>
+  
+  <!-- Main trackr text -->
+  <text x="256.0" y="283.648" 
+        font-family="SF Pro Display, -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif" 
+        font-size="92.16" 
+        font-weight="300" 
+        fill="url(#textGradient)" 
+        text-anchor="middle" 
+        dominant-baseline="middle">trackr</text>
+  
+  <!-- Small chart icon accent -->
+  <g transform="translate(358.4, 102.4)">
+    <path d="M 0 20 L 5 15 L 10 18 L 15 8 L 20 12" 
+          stroke="#4CAF50" stroke-width="2" fill="none" opacity="0.8"/>
+    <circle cx="20" cy="12" r="2" fill="#4CAF50" opacity="0.9"/>
+  </g>
+</svg>

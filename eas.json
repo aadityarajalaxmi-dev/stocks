@@ -24,7 +24,9 @@
   "submit": {
     "production": {
       "ios": {
-        "appleId": "aadityarajalaxmi@gmail.com"
+        "appleId": "rlaaditya@icloud.com",
+        "ascAppId": "PLACEHOLDER_FOR_APP_STORE_CONNECT_ID",
+        "appleTeamId": "NKZCYMJY3Q"
       },
       "android": {
         "track": "production"

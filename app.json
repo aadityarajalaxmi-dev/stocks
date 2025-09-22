@@ -5,7 +5,7 @@
     "version": "1.0.0",
     "sdkVersion": "54.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/icon.svg",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
@@ -31,7 +31,7 @@
       "package": "com.aadi.tyar.trackr",
       "versionCode": 1,
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/adaptive-icon.svg",
         "backgroundColor": "#1a1a1a"
       },
       "edgeToEdgeEnabled": true,
@@ -43,13 +43,13 @@
       ]
     },
     "notification": {
-      "icon": "./assets/icon.png",
+      "icon": "./assets/icon.svg",
       "color": "#2196F3",
       "androidMode": "default",
       "androidCollapsedTitle": "trackr Alert"
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/favicon.svg"
     },
     "plugins": [
       "expo-font",
