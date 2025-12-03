@@ -229,6 +229,8 @@ const StockWatchlist = ({ onStockSelect }) => {
         <View style={styles.headerContent}>
           <Text style={[styles.title, { color: theme.colors.headerText }]}>trackr</Text>
           <Text style={[styles.subtitle, { color: theme.colors.headerText }]}>
+
+
             {isSearching ? `Search: ${searchQuery}` : ''}
           </Text>
         </View>

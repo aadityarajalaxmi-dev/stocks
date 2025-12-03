@@ -2,14 +2,14 @@
   "expo": {
     "name": "trackr",
     "slug": "trackr",
-    "version": "1.0.0",
+    "version": "1.0.2",
     "sdkVersion": "54.0.0",
     "orientation": "portrait",
-    "icon": "./assets/new-trackr-icon-1024.svg",
+    "icon": "./assets/logo.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
-      "image": "./assets/new-trackr-icon-1024.svg",
+      "image": "./assets/logo.png",
       "resizeMode": "contain",
       "backgroundColor": "#1a1a1a"
     },
@@ -18,20 +18,14 @@
       "bundleIdentifier": "com.aadi.tyar.trackr",
       "buildNumber": "1",
       "infoPlist": {
-        "ITSAppUsesNonExemptEncryption": false,
-        "NSUserTrackingUsageDescription": "This identifier will be used to deliver personalized ads to you.",
-        "SKAdNetworkItems": [
-          {
-            "SKAdNetworkIdentifier": "cstr6suwn9.skadnetwork"
-          }
-        ]
+        "ITSAppUsesNonExemptEncryption": false
       }
     },
     "android": {
       "package": "com.aadi.tyar.trackr",
       "versionCode": 1,
       "adaptiveIcon": {
-        "foregroundImage": "./assets/new-trackr-icon-1024.svg",
+        "foregroundImage": "./assets/logo.png",
         "backgroundColor": "#1a1a1a"
       },
       "edgeToEdgeEnabled": true,
@@ -43,23 +37,16 @@
       ]
     },
     "notification": {
-      "icon": "./assets/new-trackr-icon-1024.svg",
+      "icon": "./assets/logo.png",
       "color": "#2196F3",
       "androidMode": "default",
       "androidCollapsedTitle": "trackr Alert"
     },
     "web": {
-      "favicon": "./assets/new-trackr-icon-58.svg"
+      "favicon": "./assets/logo.png"
     },
     "plugins": [
-      "expo-font",
-      [
-        "expo-ads-admob",
-        {
-          "androidAppId": "ca-app-pub-3940256099942544~3347511713",
-          "iosAppId": "ca-app-pub-3940256099942544~1458002511"
-        }
-      ]
+      "expo-font"
     ],
     "extra": {
       "eas": {

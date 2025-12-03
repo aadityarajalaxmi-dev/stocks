@@ -215,6 +215,7 @@ class NotificationService {
       await Notifications.scheduleNotificationAsync({
         content: {
           title: title,
+          
           body: body,
           sound: 'default',
           priority: Notifications.AndroidNotificationPriority.HIGH,

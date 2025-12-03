@@ -25,7 +25,7 @@
     "production": {
       "ios": {
         "appleId": "rlaaditya@icloud.com",
-        "ascAppId": "PLACEHOLDER_FOR_APP_STORE_CONNECT_ID",
+        "ascAppId": "6752585488",
         "appleTeamId": "NKZCYMJY3Q"
       },
       "android": {

@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg width="512" height="512" xmlns="http://www.w3.org/2000/svg">
-  <rect width="512" height="512" fill="#1a1a1a" rx="80"/>
-  <text x="256" y="280" font-family="Arial, sans-serif" font-size="72" 
-        font-weight="300" fill="white" text-anchor="middle">trackr</text>
-</svg>

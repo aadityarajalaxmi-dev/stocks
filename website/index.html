@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacy Policy | Trackr</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #12121a;
+            --bg-card: #1a1a24;
+            --accent-primary: #00d4aa;
+            --accent-secondary: #00a884;
+            --accent-glow: rgba(0, 212, 170, 0.15);
+            --text-primary: #f0f0f5;
+            --text-secondary: #a0a0b0;
+            --text-muted: #606070;
+            --border-color: rgba(255, 255, 255, 0.08);
+            --gradient-1: linear-gradient(135deg, #00d4aa 0%, #00a884 50%, #007a62 100%);
+            --gradient-2: linear-gradient(180deg, rgba(0, 212, 170, 0.1) 0%, transparent 50%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.7;
+            min-height: 100vh;
+        }
+
+        /* Animated background */
+        .bg-pattern {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .bg-pattern::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: 
+                radial-gradient(ellipse at 20% 20%, rgba(0, 212, 170, 0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 80%, rgba(0, 168, 132, 0.06) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 50%, rgba(0, 122, 98, 0.04) 0%, transparent 70%);
+            animation: float 20s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            33% { transform: translate(2%, 2%) rotate(1deg); }
+            66% { transform: translate(-1%, 1%) rotate(-1deg); }
+        }
+
+        .grid-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+            background-size: 60px 60px;
+            mask-image: linear-gradient(180deg, rgba(0,0,0,0.3) 0%, transparent 60%);
+        }
+
+        /* Header */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            padding: 1rem 2rem;
+            background: rgba(10, 10, 15, 0.8);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--gradient-1);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Fraunces', serif;
+            font-weight: 700;
+            font-size: 1.25rem;
+            color: var(--bg-primary);
+        }
+
+        .logo-text {
+            font-family: 'Fraunces', serif;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            letter-spacing: -0.02em;
+        }
+
+        .header-badge {
+            padding: 0.5rem 1rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 100px;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        /* Hero section */
+        .hero {
+            position: relative;
+            z-index: 1;
+            padding: 10rem 2rem 6rem;
+            text-align: center;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: var(--accent-glow);
+            border: 1px solid rgba(0, 212, 170, 0.3);
+            border-radius: 100px;
+            font-size: 0.875rem;
+            color: var(--accent-primary);
+            margin-bottom: 2rem;
+        }
+
+        .hero-badge svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .hero h1 {
+            font-family: 'Fraunces', serif;
+            font-size: clamp(2.5rem, 6vw, 4rem);
+            font-weight: 600;
+            letter-spacing: -0.03em;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(180deg, var(--text-primary) 0%, var(--text-secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            font-size: 1.125rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto 2rem;
+        }
+
+        .hero-meta {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+            font-size: 0.875rem;
+            color: var(--text-muted);
+        }
+
+        .hero-meta span {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .hero-meta svg {
+            width: 16px;
+            height: 16px;
+            color: var(--accent-primary);
+        }
+
+        /* Main content */
+        main {
+            position: relative;
+            z-index: 1;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 2rem 6rem;
+        }
+
+        /* Navigation sidebar */
+        .toc {
+            position: fixed;
+            left: 2rem;
+            top: 50%;
+            transform: translateY(-50%);
+            display: none;
+            flex-direction: column;
+            gap: 0.5rem;
+            z-index: 50;
+        }
+
+        @media (min-width: 1400px) {
+            .toc {
+                display: flex;
+            }
+        }
+
+        .toc a {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.5rem 0;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.8125rem;
+            transition: all 0.3s ease;
+        }
+
+        .toc a::before {
+            content: '';
+            width: 2px;
+            height: 20px;
+            background: var(--border-color);
+            border-radius: 2px;
+            transition: all 0.3s ease;
+        }
+
+        .toc a:hover,
+        .toc a.active {
+            color: var(--accent-primary);
+        }
+
+        .toc a:hover::before,
+        .toc a.active::before {
+            background: var(--accent-primary);
+            box-shadow: 0 0 10px var(--accent-primary);
+        }
+
+        /* Sections */
+        section {
+            margin-bottom: 4rem;
+            scroll-margin-top: 100px;
+        }
+
+        .section-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 2.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .section-card:hover {
+            border-color: rgba(0, 212, 170, 0.2);
+            box-shadow: 0 0 40px var(--accent-glow);
+        }
+
+        h2 {
+            font-family: 'Fraunces', serif;
+            font-size: 1.75rem;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        h2 .section-icon {
+            width: 44px;
+            height: 44px;
+            background: var(--accent-glow);
+            border: 1px solid rgba(0, 212, 170, 0.2);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        h2 svg {
+            width: 22px;
+            height: 22px;
+            color: var(--accent-primary);
+        }
+
+        h3 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin: 2rem 0 1rem;
+            color: var(--text-primary);
+        }
+
+        p {
+            margin-bottom: 1rem;
+            color: var(--text-secondary);
+        }
+
+        ul, ol {
+            margin-bottom: 1rem;
+            padding-left: 1.5rem;
+        }
+
+        li {
+            margin-bottom: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        li::marker {
+            color: var(--accent-primary);
+        }
+
+        strong {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        /* Info boxes */
+        .info-box {
+            background: rgba(0, 212, 170, 0.05);
+            border: 1px solid rgba(0, 212, 170, 0.2);
+            border-radius: 12px;
+            padding: 1.25rem 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .info-box p {
+            margin: 0;
+            font-size: 0.9375rem;
+        }
+
+        /* Service cards */
+        .service-grid {
+            display: grid;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .service-item {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.25rem;
+        }
+
+        .service-item strong {
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .service-item p {
+            margin: 0;
+            font-size: 0.9375rem;
+        }
+
+        /* Contact section */
+        .contact-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .contact-item {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .contact-item:hover {
+            border-color: var(--accent-primary);
+            transform: translateY(-2px);
+        }
+
+        .contact-item svg {
+            width: 24px;
+            height: 24px;
+            color: var(--accent-primary);
+            margin-bottom: 1rem;
+        }
+
+        .contact-item strong {
+            display: block;
+            margin-bottom: 0.25rem;
+        }
+
+        .contact-item span {
+            color: var(--text-secondary);
+            font-size: 0.9375rem;
+        }
+
+        /* Footer */
+        footer {
+            position: relative;
+            z-index: 1;
+            border-top: 1px solid var(--border-color);
+            padding: 3rem 2rem;
+            text-align: center;
+        }
+
+        .footer-content {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        footer p {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+        }
+
+        footer a {
+            color: var(--accent-primary);
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            header {
+                padding: 1rem;
+            }
+
+            .header-badge {
+                display: none;
+            }
+
+            .hero {
+                padding: 8rem 1.5rem 4rem;
+            }
+
+            main {
+                padding: 0 1.5rem 4rem;
+            }
+
+            .section-card {
+                padding: 1.5rem;
+                border-radius: 16px;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            h2 .section-icon {
+                width: 38px;
+                height: 38px;
+            }
+        }
+
+        /* Scroll animations */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.6s ease;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-pattern">
+        <div class="grid-overlay"></div>
+    </div>
+
+    <header>
+        <div class="header-content">
+            <a href="#" class="logo">
+                <div class="logo-icon">T</div>
+                <span class="logo-text">Trackr</span>
+            </a>
+            <div class="header-badge">Privacy Policy</div>
+        </div>
+    </header>
+
+    <nav class="toc">
+        <a href="#introduction">Introduction</a>
+        <a href="#information-collected">Information Collected</a>
+        <a href="#how-we-use">How We Use Info</a>
+        <a href="#sharing">Sharing & Disclosure</a>
+        <a href="#security">Data Security</a>
+        <a href="#third-party">Third-Party Services</a>
+        <a href="#your-rights">Your Rights</a>
+        <a href="#children">Children's Privacy</a>
+        <a href="#changes">Policy Changes</a>
+        <a href="#contact">Contact</a>
+    </nav>
+
+    <section class="hero">
+        <div class="hero-badge">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+            Your Privacy Matters
+        </div>
+        <h1>Privacy Policy</h1>
+        <p>We're committed to protecting your privacy and being transparent about how we handle your data in the Trackr app.</p>
+        <div class="hero-meta">
+            <span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                    <line x1="16" y1="2" x2="16" y2="6"/>
+                    <line x1="8" y1="2" x2="8" y2="6"/>
+                    <line x1="3" y1="10" x2="21" y2="10"/>
+                </svg>
+                Effective: December 2024
+            </span>
+            <span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/>
+                    <polyline points="12 6 12 12 16 14"/>
+                </svg>
+                Last Updated: December 16, 2024
+            </span>
+        </div>
+    </section>
+
+    <main>
+        <section id="introduction" class="fade-in">
+            <div class="section-card">
+                <h2>
+                    <span class="section-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <line x1="12" y1="16" x2="12" y2="12"/>
+                            <line x1="12" y1="8" x2="12.01" y2="8"/>
+                        </svg>
+                    </span>
+                    Introduction
+                </h2>
+                <p>Trackr ("we," "our," or "us") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our mobile application Trackr (the "App").</p>
+                <div class="info-box">
+                    <p>Please read this privacy policy carefully. If you do not agree with the terms of this privacy policy, please do not access the application.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="information-collected" class="fade-in">
+            <div class="section-card">
+                <h2>
+                    <span class="section-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                            <polyline points="14 2 14 8 20 8"/>
+                            <line x1="16" y1="13" x2="8" y2="13"/>
+                            <line x1="16" y1="17" x2="8" y2="17"/>
+                            <polyline points="10 9 9 9 8 9"/>
+                        </svg>
+                    </span>
+                    Information We Collect
+                </h2>
+                
+                <h3>Information You Provide</h3>
+                <ul>
+                    <li><strong>Stock Watchlist Data:</strong> Symbols of stocks you choose to track</li>
+                    <li><strong>Notification Preferences:</strong> Your alert settings and notification intervals</li>
+                    <li><strong>App Settings:</strong> Theme preferences and customization options</li>
+                </ul>
+
+                <h3>Information Automatically Collected</h3>
+                <ul>
+                    <li><strong>Usage Data:</strong> How you interact with the app (which features you use, time spent)</li>
+                    <li><strong>Device Information:</strong> Device type, operating system, app version</li>
+                    <li><strong>Performance Data:</strong> Crash reports and app performance metrics</li>
+                </ul>
+
+                <h3>Third-Party Data</h3>
+                <ul>
+                    <li><strong>Stock Market Data:</strong> We retrieve public stock market data from Yahoo Finance API</li>
+                    <li><strong>News Data:</strong> Financial news from publicly available sources</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="how-we-use" class="fade-in">
+            <div class="section-card">
+                <h2>
+                    <span class="section-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polygon points="12 2 2 7 12 12 22 7 12 2"/>
+                            <polyline points="2 17 12 22 22 17"/>
+                            <polyline points="2 12 12 17 22 12"/>
+                        </svg>
+                    </span>
+                    How We Use Your Information
+                </h2>
+                <p>We use the information we collect to:</p>
+                <ul>
+                    <li>Provide real-time stock market data and analysis</li>
+                    <li>Send you notifications based on your preferences</li>
+                    <li>Improve app performance and user experience</li>
+                    <li>Provide customer support and respond to inquiries</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="sharing" class="fade-in">
+            <div class="section-card">
+                <h2>
+                    <span class="section-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="18" cy="5" r="3"/>
+                            <circle cx="6" cy="12" r="3"/>
+                            <circle cx="18" cy="19" r="3"/>
+                            <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/>
+                            <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+                        </svg>
+                    </span>
+                    Information Sharing & Disclosure
+                </h2>
+                <p>We do not sell, trade, or otherwise transfer your personal information to third parties, except:</p>
+                
+                <h3>Service Providers</h3>
+                <div class="service-grid">
+                    <div class="service-item">
+                        <strong>Yahoo Finance</strong>
+                        <p>For stock market data (no personal data shared)</p>
+                    </div>
+                    <div class="service-item">
+                        <strong>Apple / Google</strong>
+                        <p>For app distribution and analytics</p>
+                    </div>
+                </div>
+
+                <h3>Legal Requirements</h3>
+                <p>We may disclose your information if required by law or to protect our rights and safety.</p>
+            </div>
+        </section>
+
+        <section id="security" class="fade-in">
+            <div class="section-card">
+                <h2>
+                    <span class="section-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                        </svg>
+                    </span>
+                    Data Security
+                </h2>
+                <p>We implement appropriate technical and organizational security measures to protect your information against unauthorized access, alteration, disclosure, or destruction.</p>
+                <div class="info-box">
+                    <p>However, no method of transmission over the internet or electronic storage is 100% secure. We strive to use commercially acceptable means to protect your personal information.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="third-party" class="fade-in">
+            <div class="section-card">
+                <h2>
+                    <span class="section-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                            <polyline points="15 3 21 3 21 9"/>
+                            <line x1="10" y1="14" x2="21" y2="3"/>
+                        </svg>
+                    </span>
+                    Third-Party Services
+                </h2>
+                
+                <div class="service-grid">
+                    <div class="service-item">
+                        <strong>Yahoo Finance API</strong>
+                        <p>We use Yahoo Finance to provide stock market data. This service may have its own privacy policy governing the use of market data.</p>
+                    </div>
+                    <div class="service-item">
+                        <strong>Apple App Store / Google Play Store</strong>
+                        <p>App downloads and usage may be subject to Apple's or Google's respective privacy policies.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="your-rights" class="fade-in">
+            <div class="section-card">
+                <h2>
+                    <span class="section-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                            <circle cx="8.5" cy="7" r="4"/>
+                            <polyline points="17 11 19 13 23 9"/>
+                        </svg>
+                    </span>
+                    Your Privacy Rights
+                </h2>
+                <p>Depending on your location, you may have the right to:</p>
+                <ul>
+                    <li>Access the personal information we hold about you</li>
+                    <li>Request correction of inaccurate information</li>
+                    <li>Request deletion of your information</li>
+                    <li>Opt out of certain data processing activities</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="children" class="fade-in">
+            <div class="section-card">
+                <h2>
+                    <span class="section-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                            <circle cx="9" cy="7" r="4"/>
+                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                        </svg>
+                    </span>
+                    Children's Privacy
+                </h2>
+                <p>Our app is not intended for children under 17 years of age. We do not knowingly collect personal information from children under 17.</p>
+                <div class="info-box">
+                    <p>If you are a parent or guardian and believe your child has provided us with personal information, please contact us immediately.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="changes" class="fade-in">
+            <div class="section-card">
+                <h2>
+                    <span class="section-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                        </svg>
+                    </span>
+                    Changes to This Policy
+                </h2>
+                <p>We may update this Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page and updating the "Last Updated" date.</p>
+                <p>You are advised to review this Privacy Policy periodically for any changes.</p>
+                
+                <h3>Data Retention</h3>
+                <p>We retain your information only as long as necessary to provide you with our services and as described in this Privacy Policy. We will also retain and use your information as necessary to comply with legal obligations, resolve disputes, and enforce our agreements.</p>
+            </div>
+        </section>
+
+        <section id="contact" class="fade-in">
+            <div class="section-card">
+                <h2>
+                    <span class="section-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                            <polyline points="22,6 12,13 2,6"/>
+                        </svg>
+                    </span>
+                    Contact Information
+                </h2>
+                <p>If you have any questions about this Privacy Policy, please contact us:</p>
+                
+                <div class="contact-grid">
+                    <a href="mailto:aadityarajalaxmi@gmail.com" class="contact-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                            <polyline points="22,6 12,13 2,6"/>
+                        </svg>
+                        <strong>Email</strong>
+                        <span>aadityarajalaxmi@gmail.com</span>
+                    </a>
+                    <a href="https://github.com/aadityarajalaxmi-dev/stocks" target="_blank" class="contact-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+                        </svg>
+                        <strong>GitHub</strong>
+                        <span>aadityarajalaxmi-dev/stocks</span>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <section class="fade-in">
+            <div class="section-card" style="text-align: center;">
+                <h2 style="justify-content: center;">
+                    <span class="section-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                            <polyline points="22 4 12 14.01 9 11.01"/>
+                        </svg>
+                    </span>
+                    Consent
+                </h2>
+                <p>By using our App, you consent to our Privacy Policy and agree to its terms.</p>
+                <div class="info-box">
+                    <p>This privacy policy is effective as of December 16, 2024, and will remain in effect except with respect to any changes in its provisions in the future, which will be in effect immediately after being posted on this page.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <p>© 2024 Trackr. All rights reserved.</p>
+            <p style="margin-top: 0.5rem;">
+                <a href="mailto:aadityarajalaxmi@gmail.com">Contact Us</a>
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        // Scroll animations
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+        // Active TOC link
+        const sections = document.querySelectorAll('section[id]');
+        const tocLinks = document.querySelectorAll('.toc a');
+
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                if (scrollY >= sectionTop - 200) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            tocLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === `#${current}`) {
+                    link.classList.add('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
+
